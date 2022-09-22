@@ -1,11 +1,13 @@
 import Aliases from "./modules/aliases.js";
+import {
+  TEMPLATE_ADD,
+  TEMPLATE_SHOW,
+  TEMPLATE_TITLE,
+} from "./modules/templates.js";
 
 const renderPage = () => {
   const db = new Aliases(chrome.storage.sync);
-  var aliasesContainer = document.getElementById("aliases");
-  var templateAdd = document.getElementById("template-add");
-  var templateShow = document.getElementById("template-show");
-  var templateTitle = document.getElementById("template-title");
+  const aliasesContainer = document.getElementById("aliases");
   var currentURL = "";
 
   const getCurrentURL = () => {
@@ -17,9 +19,17 @@ const renderPage = () => {
   };
 
   const removeButtonClick = (event) => {
-    const parentElement = event.target.parentElement.parentElement;
-    db.removeAlias(parentElement.querySelector(".alias").textContent);
-    populateList();
+    const parentElement =
+      event.target.parentElement.parentElement.parentElement;
+    const result = db.removeAlias(
+      parentElement.querySelector(".alias").textContent
+    );
+
+    if (result) {
+      populateList();
+    } else {
+      alert("The alias doesn't exist");
+    }
   };
 
   const cleanInputsButtonClick = (event) => {
@@ -31,26 +41,35 @@ const renderPage = () => {
 
   const saveButtonClick = (event) => {
     const parentElement = event.target.parentElement.parentElement;
-    db.addAlias(
-      parentElement.querySelector(".alias input").value,
-      parentElement.querySelector(".target input").value
-    );
-    populateList();
+    const newAlias = parentElement.querySelector(".alias input").value;
+    const newTarget = parentElement.querySelector(".target input").value;
+
+    if (!newAlias || !newTarget) {
+      alert("Please complete all the fields");
+      return;
+    }
+
+    const result = db.addAlias(newAlias, newTarget);
+
+    if (result) {
+      populateList();
+    } else {
+      alert("Alias already exist!");
+    }
   };
 
   const populateList = () => {
     db.loadStore().then((aliasesList = {}) => {
       aliasesContainer.innerHTML = "";
 
-      aliasesContainer.insertAdjacentHTML("beforeend", templateTitle.innerHTML);
+      aliasesContainer.insertAdjacentHTML("beforeend", TEMPLATE_TITLE);
 
       Object.keys(aliasesList).forEach((alias) => {
-        templateShow.querySelector(".alias").innerHTML = `#${alias}`;
-        templateShow.querySelector(".target").innerHTML = aliasesList[alias];
-        aliasesContainer.insertAdjacentHTML(
-          "beforeend",
-          templateShow.innerHTML
-        );
+        const aliasElement = TEMPLATE_SHOW.replace(
+          "%ALIAS%",
+          `#${alias}`
+        ).replace("%TARGET%", aliasesList[alias]);
+        aliasesContainer.insertAdjacentHTML("beforeend", aliasElement);
       });
 
       if (Object.keys(aliasesList).length === 0) {
@@ -60,21 +79,21 @@ const renderPage = () => {
         );
       }
 
-      aliasesContainer.insertAdjacentHTML("beforeend", templateAdd.innerHTML);
+      aliasesContainer.insertAdjacentHTML("beforeend", TEMPLATE_ADD);
 
       document.querySelectorAll(".remove").forEach((button) => {
         button.addEventListener("click", removeButtonClick);
       });
 
       document
-        .querySelectorAll(".save")[1]
+        .querySelector("#save")
         .addEventListener("click", saveButtonClick);
 
       document
-        .querySelectorAll(".clean-input")[1]
+        .querySelector("#clean-input")
         .addEventListener("click", cleanInputsButtonClick);
 
-      document.querySelectorAll(".target-value")[1].value = currentURL;
+      document.querySelector("#target-value").value = currentURL;
     });
   };
   getCurrentURL();

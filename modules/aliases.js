@@ -1,6 +1,6 @@
 // Class used to manage our Aliases
 function Aliases(chromeStorage) {
-  var STORAGE_NAME = "urlias_aliases";
+  var STORAGE_NAME = "alias2url_db";
   this.db = {};
 
   this.loadStore = () => {
@@ -28,8 +28,13 @@ function Aliases(chromeStorage) {
       alias = alias.substring(1);
     }
 
+    if (this.db[alias]) {
+      return false;
+    }
+
     this.db[alias] = target;
     this.saveStore();
+    return true;
   };
 
   this.removeAlias = (alias) => {
@@ -40,7 +45,10 @@ function Aliases(chromeStorage) {
     if (this.db[alias]) {
       delete this.db[alias];
       this.saveStore();
+      return true;
     }
+
+    return false;
   };
 
   this.getURL = (command) => {
