@@ -1,0 +1,37 @@
+{
+  "name": "Alias2URL",
+  "description": "Convert #aliases to URLs",
+  "version": "1.0",
+  "manifest_version": 3,
+  "author": "Benjamin Simon",
+  "homepage_url": "https://github.com/b3nshi/alias2url",
+  "commands": {
+    "process-alias": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Detect when an alias needs to be replaced"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage", "tabs", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/images/icon16.png",
+      "32": "/images/icon32.png",
+      "48": "/images/icon48.png",
+      "128": "/images/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "/images/icon16.png",
+    "32": "/images/icon32.png",
+    "48": "/images/icon48.png",
+    "128": "/images/icon128.png"
+  }
+}
