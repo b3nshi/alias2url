@@ -3,7 +3,7 @@ import Command from "./modules/command.js";
 
 const aliases = new Aliases(chrome.storage.sync);
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((_tabId, changeInfo, tab) => {
   const command = Command.extractCommand(tab.url);
   if (Command.isValid(command) && changeInfo.status === "loading") {
     aliases.loadStore().then(() => {
